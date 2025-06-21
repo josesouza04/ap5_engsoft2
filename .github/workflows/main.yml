@@ -1,4 +1,4 @@
-name: Python CI/CD
+name: Python CI/CD Multi-OS
 
 on:
   push:
@@ -8,17 +8,20 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    # Define a matriz de sistemas operacionais e versões do Python
     strategy:
       matrix:
-        # Teste com diferentes versões do Python
+        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+    # O job será executado em cada combinação da matriz
+    runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout do código
       uses: actions/checkout@v4
 
-    - name: Configurar Python ${{ matrix.python-version }}
+    - name: Configurar Python ${{ matrix.python-version }} no ${{ matrix.os }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
@@ -35,5 +38,4 @@ jobs:
     - name: Rodar Testes de Unidade
       run: |
         # Executa os testes de unidade usando unittest discover
-        # O discover procura por arquivos 'test_*.py' e classes que herdam de unittest.TestCase
         python -m unittest discover -s . -p 'test_*.py'
